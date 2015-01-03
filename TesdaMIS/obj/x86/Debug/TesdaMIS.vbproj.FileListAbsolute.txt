@@ -1,0 +1,14 @@
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.frmMain.resources
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.frmUploadData.resources
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.frmViewRecord.resources
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.frmViewReport.resources
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.LoginForm1.resources
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.Resources.resources
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.vbproj.GenerateResource.Cache
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\bin\Debug\TesdaMIS.exe
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\bin\Debug\TesdaMIS.pdb
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\bin\Debug\TesdaMIS.xml
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.frmSearchRecords.resources
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.exe
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.xml
+C:\Users\Theodore\Documents\GitHub\freelance-library\TesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.pdb
