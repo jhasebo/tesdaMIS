@@ -22,129 +22,112 @@ Partial Class frmUploadData
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
-        Me.RadioButton3 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton2 = New System.Windows.Forms.RadioButton()
-        Me.RadioButton1 = New System.Windows.Forms.RadioButton()
-        Me.GroupBox2 = New System.Windows.Forms.GroupBox()
-        Me.DateTimePicker1 = New System.Windows.Forms.DateTimePicker()
-        Me.Button1 = New System.Windows.Forms.Button()
-        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.Button2 = New System.Windows.Forms.Button()
-        Me.GroupBox1.SuspendLayout()
-        Me.GroupBox2.SuspendLayout()
+        Me.dtpReportCutOff = New System.Windows.Forms.DateTimePicker()
+        Me.btnUpload = New System.Windows.Forms.Button()
+        Me.openFileDialog = New System.Windows.Forms.OpenFileDialog()
+        Me.btnCancel = New System.Windows.Forms.Button()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.Label2 = New System.Windows.Forms.Label()
+        Me.Panel1 = New System.Windows.Forms.Panel()
+        Me.Panel1.SuspendLayout()
         Me.SuspendLayout()
         '
-        'GroupBox1
+        'dtpReportCutOff
         '
-        Me.GroupBox1.Controls.Add(Me.RadioButton3)
-        Me.GroupBox1.Controls.Add(Me.RadioButton2)
-        Me.GroupBox1.Controls.Add(Me.RadioButton1)
-        Me.GroupBox1.Location = New System.Drawing.Point(13, 13)
-        Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(241, 104)
-        Me.GroupBox1.TabIndex = 0
-        Me.GroupBox1.TabStop = False
-        Me.GroupBox1.Text = "SELECT TYPE OF MIS"
+        Me.dtpReportCutOff.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
+        Me.dtpReportCutOff.Location = New System.Drawing.Point(12, 55)
+        Me.dtpReportCutOff.Name = "dtpReportCutOff"
+        Me.dtpReportCutOff.Size = New System.Drawing.Size(166, 20)
+        Me.dtpReportCutOff.TabIndex = 0
         '
-        'RadioButton3
+        'btnUpload
         '
-        Me.RadioButton3.AutoSize = True
-        Me.RadioButton3.Location = New System.Drawing.Point(23, 75)
-        Me.RadioButton3.Name = "RadioButton3"
-        Me.RadioButton3.Size = New System.Drawing.Size(46, 17)
-        Me.RadioButton3.TabIndex = 2
-        Me.RadioButton3.TabStop = True
-        Me.RadioButton3.Text = "Emp"
-        Me.RadioButton3.UseVisualStyleBackColor = True
+        Me.btnUpload.BackColor = System.Drawing.Color.FromArgb(CType(CType(51, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.btnUpload.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(51, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.btnUpload.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnUpload.ForeColor = System.Drawing.Color.White
+        Me.btnUpload.Location = New System.Drawing.Point(12, 81)
+        Me.btnUpload.Name = "btnUpload"
+        Me.btnUpload.Size = New System.Drawing.Size(80, 31)
+        Me.btnUpload.TabIndex = 4
+        Me.btnUpload.Text = "Upload"
+        Me.btnUpload.UseVisualStyleBackColor = False
         '
-        'RadioButton2
+        'openFileDialog
         '
-        Me.RadioButton2.AutoSize = True
-        Me.RadioButton2.Location = New System.Drawing.Point(23, 52)
-        Me.RadioButton2.Name = "RadioButton2"
-        Me.RadioButton2.Size = New System.Drawing.Size(40, 17)
-        Me.RadioButton2.TabIndex = 1
-        Me.RadioButton2.TabStop = True
-        Me.RadioButton2.Text = "TR"
-        Me.RadioButton2.UseVisualStyleBackColor = True
+        Me.openFileDialog.DefaultExt = "xlsx"
+        Me.openFileDialog.FileName = "PMMS SB"
+        Me.openFileDialog.Filter = "Excel Workbooks (*.xlsx)|*.xlsx"
         '
-        'RadioButton1
+        'btnCancel
         '
-        Me.RadioButton1.AutoSize = True
-        Me.RadioButton1.Location = New System.Drawing.Point(23, 29)
-        Me.RadioButton1.Name = "RadioButton1"
-        Me.RadioButton1.Size = New System.Drawing.Size(40, 17)
-        Me.RadioButton1.TabIndex = 0
-        Me.RadioButton1.TabStop = True
-        Me.RadioButton1.Text = "ER"
-        Me.RadioButton1.UseVisualStyleBackColor = True
+        Me.btnCancel.BackColor = System.Drawing.Color.FromArgb(CType(CType(51, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.btnCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(51, Byte), Integer), CType(CType(153, Byte), Integer), CType(CType(255, Byte), Integer))
+        Me.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnCancel.ForeColor = System.Drawing.Color.White
+        Me.btnCancel.Location = New System.Drawing.Point(98, 81)
+        Me.btnCancel.Name = "btnCancel"
+        Me.btnCancel.Size = New System.Drawing.Size(80, 31)
+        Me.btnCancel.TabIndex = 5
+        Me.btnCancel.Text = "Cancel"
+        Me.btnCancel.UseVisualStyleBackColor = False
         '
-        'GroupBox2
+        'Label1
         '
-        Me.GroupBox2.Controls.Add(Me.DateTimePicker1)
-        Me.GroupBox2.Location = New System.Drawing.Point(13, 123)
-        Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(241, 51)
-        Me.GroupBox2.TabIndex = 3
-        Me.GroupBox2.TabStop = False
-        Me.GroupBox2.Text = "SELECT REPORTING CUT-OFF MONTH"
+        Me.Label1.AutoSize = True
+        Me.Label1.Font = New System.Drawing.Font("Segoe UI Semibold", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(100, Byte), Integer), CType(CType(100, Byte), Integer), CType(CType(100, Byte), Integer))
+        Me.Label1.Location = New System.Drawing.Point(9, 39)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(166, 13)
+        Me.Label1.TabIndex = 2
+        Me.Label1.Text = "Select Reporting Cut-off Month"
         '
-        'DateTimePicker1
+        'Label2
         '
-        Me.DateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.[Short]
-        Me.DateTimePicker1.Location = New System.Drawing.Point(8, 19)
-        Me.DateTimePicker1.Name = "DateTimePicker1"
-        Me.DateTimePicker1.Size = New System.Drawing.Size(125, 20)
-        Me.DateTimePicker1.TabIndex = 0
+        Me.Label2.AutoSize = True
+        Me.Label2.BackColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
+        Me.Label2.ForeColor = System.Drawing.Color.FromArgb(CType(CType(100, Byte), Integer), CType(CType(100, Byte), Integer), CType(CType(100, Byte), Integer))
+        Me.Label2.Location = New System.Drawing.Point(5, 8)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(83, 13)
+        Me.Label2.TabIndex = 6
+        Me.Label2.Text = "UPLOAD DATA"
         '
-        'Button1
+        'Panel1
         '
-        Me.Button1.Location = New System.Drawing.Point(13, 180)
-        Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(113, 31)
-        Me.Button1.TabIndex = 4
-        Me.Button1.Text = "UPLOAD"
-        Me.Button1.UseVisualStyleBackColor = True
-        '
-        'OpenFileDialog1
-        '
-        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
-        Me.OpenFileDialog1.Filter = "Excel Worksheets (*.xls)|*.xls"
-        '
-        'Button2
-        '
-        Me.Button2.Location = New System.Drawing.Point(132, 180)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(119, 31)
-        Me.Button2.TabIndex = 5
-        Me.Button2.Text = "CANCEL"
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.Panel1.BackColor = System.Drawing.Color.FromArgb(CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer), CType(CType(235, Byte), Integer))
+        Me.Panel1.Controls.Add(Me.Label2)
+        Me.Panel1.Location = New System.Drawing.Point(-1, -1)
+        Me.Panel1.Name = "Panel1"
+        Me.Panel1.Size = New System.Drawing.Size(196, 27)
+        Me.Panel1.TabIndex = 7
         '
         'frmUploadData
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(264, 227)
-        Me.Controls.Add(Me.Button2)
-        Me.Controls.Add(Me.Button1)
-        Me.Controls.Add(Me.GroupBox2)
-        Me.Controls.Add(Me.GroupBox1)
+        Me.BackColor = System.Drawing.Color.WhiteSmoke
+        Me.ClientSize = New System.Drawing.Size(191, 125)
+        Me.Controls.Add(Me.Panel1)
+        Me.Controls.Add(Me.Label1)
+        Me.Controls.Add(Me.dtpReportCutOff)
+        Me.Controls.Add(Me.btnCancel)
+        Me.Controls.Add(Me.btnUpload)
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None
         Me.Name = "frmUploadData"
-        Me.Text = "Upload Data"
-        Me.GroupBox1.ResumeLayout(False)
-        Me.GroupBox1.PerformLayout()
-        Me.GroupBox2.ResumeLayout(False)
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.Panel1.ResumeLayout(False)
+        Me.Panel1.PerformLayout()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
-    Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
-    Friend WithEvents RadioButton3 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton2 As System.Windows.Forms.RadioButton
-    Friend WithEvents RadioButton1 As System.Windows.Forms.RadioButton
-    Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
-    Friend WithEvents DateTimePicker1 As System.Windows.Forms.DateTimePicker
-    Friend WithEvents Button1 As System.Windows.Forms.Button
-    Friend WithEvents OpenFileDialog1 As System.Windows.Forms.OpenFileDialog
-    Friend WithEvents Button2 As System.Windows.Forms.Button
+    Friend WithEvents btnUpload As System.Windows.Forms.Button
+    Friend WithEvents openFileDialog As System.Windows.Forms.OpenFileDialog
+    Friend WithEvents btnCancel As System.Windows.Forms.Button
+    Friend WithEvents dtpReportCutOff As System.Windows.Forms.DateTimePicker
+    Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents Label2 As System.Windows.Forms.Label
+    Friend WithEvents Panel1 As System.Windows.Forms.Panel
 End Class

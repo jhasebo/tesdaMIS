@@ -49,6 +49,9 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -78,12 +81,6 @@
     <Compile Include="frmMain.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmSearchRecords.designer.vb">
-      <DependentUpon>frmSearchRecords.vb</DependentUpon>
-    </Compile>
-    <Compile Include="frmSearchRecords.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="frmUploadData.designer.vb">
       <DependentUpon>frmUploadData.vb</DependentUpon>
     </Compile>
@@ -103,10 +100,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GlobalVariables.vb" />
-    <Compile Include="LoginForm1.designer.vb">
-      <DependentUpon>LoginForm1.vb</DependentUpon>
+    <Compile Include="frmLogin.designer.vb">
+      <DependentUpon>frmLogin.vb</DependentUpon>
     </Compile>
-    <Compile Include="LoginForm1.vb">
+    <Compile Include="frmLogin.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -129,9 +126,6 @@
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmSearchRecords.resx">
-      <DependentUpon>frmSearchRecords.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="frmUploadData.resx">
       <DependentUpon>frmUploadData.vb</DependentUpon>
     </EmbeddedResource>
@@ -141,8 +135,8 @@
     <EmbeddedResource Include="frmViewReport.resx">
       <DependentUpon>frmViewReport.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LoginForm1.resx">
-      <DependentUpon>LoginForm1.vb</DependentUpon>
+    <EmbeddedResource Include="frmLogin.resx">
+      <DependentUpon>frmLogin.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>

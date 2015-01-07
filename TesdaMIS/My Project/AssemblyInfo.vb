@@ -8,11 +8,11 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("TesdaMIS")> 
+<Assembly: AssemblyTitle("TVET Monitoring Management System")> 
 <Assembly: AssemblyDescription("")> 
-<Assembly: AssemblyCompany("Microsoft")> 
-<Assembly: AssemblyProduct("TesdaMIS")> 
-<Assembly: AssemblyCopyright("Copyright © Microsoft 2014")> 
+<Assembly: AssemblyCompany("TESDA District office")> 
+<Assembly: AssemblyProduct("TVET Monitoring Management System")> 
+<Assembly: AssemblyCopyright("Copyright © Monica N. Balansay 2014")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
