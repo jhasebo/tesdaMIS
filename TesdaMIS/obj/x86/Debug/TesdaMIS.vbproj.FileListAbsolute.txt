@@ -26,3 +26,5 @@ C:\Users\Theodore\Documents\GitHub\tesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.exe
 C:\Users\Theodore\Documents\GitHub\tesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.xml
 C:\Users\Theodore\Documents\GitHub\tesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.pdb
 C:\Users\Theodore\Documents\GitHub\tesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.vbprojResolveAssemblyReference.cache
+C:\Users\Theodore\Documents\GitHub\tesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.frmEditRecord.resources
+C:\Users\Theodore\Documents\GitHub\tesdaMIS\TesdaMIS\obj\x86\Debug\TesdaMIS.frmAddNewRecord.resources

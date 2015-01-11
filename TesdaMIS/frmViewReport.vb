@@ -5,7 +5,6 @@ Imports Microsoft.Office.Interop
 Public Class frmViewReport
     Dim cn As OleDbConnection
     Private Sub frmViewReport_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        If sourceDBfilepath <> String.Empty Then
             If DataGridView1.Columns.Count > 0 Then
                 While DataGridView1.Columns.Count > 0
                     DataGridView1.Columns.RemoveAt(DataGridView1.Columns.Count - 1)
@@ -24,10 +23,6 @@ Public Class frmViewReport
             DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
             DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
             DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
-        Else
-            MsgBox("Please upload a valid excel database file.", MsgBoxStyle.OkOnly, "Unable to Open Reports")
-            Me.Close()
-        End If
     End Sub
 
     Private Sub cbReportCategory_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cbReportCategory.SelectedIndexChanged
@@ -61,8 +56,9 @@ Public Class frmViewReport
         DataGridView1.Columns(0).SortMode = DataGridViewColumnSortMode.NotSortable
         DataGridView1.Columns(1).SortMode = DataGridViewColumnSortMode.NotSortable
         DataGridView1.Columns(2).SortMode = DataGridViewColumnSortMode.NotSortable
+        cbSelectRecord.Items.Clear()
+        cbSelectRecord.Items.Add("All")
         If cbReportCategory.Text = "per TVI" Then
-            cbSelectRecord.Items.Clear()
             If sourceDBfilepath <> String.Empty Then
                 Dim dsv As New DataSet
                 Dim da As New OleDbDataAdapter("SELECT DISTINCT ProviderName FROM [MISdb$]", cn)
@@ -75,7 +71,6 @@ Public Class frmViewReport
                 End While
             End If
         ElseIf cbReportCategory.Text = "per Educational Attainment" Then
-            cbSelectRecord.Items.Clear()
             cbSelectRecord.Items.Add("No Grade Completed")
             cbSelectRecord.Items.Add("Elementary Level")
             cbSelectRecord.Items.Add("Elementary Graduate")
@@ -87,7 +82,6 @@ Public Class frmViewReport
             cbSelectRecord.Items.Add("College Graduate/Higher")
             cbSelectRecord.Items.Add("TVET Graduate")
         ElseIf cbReportCategory.Text = "per Age Group" Then
-            cbSelectRecord.Items.Clear()
             cbSelectRecord.Items.Add("15-17")
             cbSelectRecord.Items.Add("18-24")
             cbSelectRecord.Items.Add("25-34")
@@ -99,134 +93,268 @@ Public Class frmViewReport
     End Sub
 
     Private Sub btnSelectRecord_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelectRecord.Click
-        If cbReportCategory.Text = "per TVI" Then
-            Dim flag As Boolean = False
-            For Each Item In lbActiveRecords.Items
-                If Item = cbSelectRecord.Text Then
-                    flag = True
-                End If
-            Next Item
-            If flag = False Then
-                If cbSelectRecord.Text <> String.Empty Then
-                    lbActiveRecords.Items.Add(cbSelectRecord.Text)
-                    Dim dc As New DataGridViewTextBoxColumn
-                    Dim dc2 As New DataGridViewTextBoxColumn
-                    Dim dc3 As New DataGridViewTextBoxColumn
-                    Dim dc4 As New DataGridViewTextBoxColumn
-                    dc.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                    dc2.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                    dc3.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                    dc4.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                    DataGridView1.Columns.Add(dc)
-                    DataGridView1.Columns.Add(dc2)
-                    DataGridView1.Columns.Add(dc3)
-                    DataGridView1.Columns.Add(dc4)
-                    Dim workingindex As New Integer
-                    workingindex = (((lbActiveRecords.Items.Count * 4) - 3) + 3) - 1
-                    DataGridView1.Rows(0).Cells(workingindex).Value = "ENROLLED"
-                    DataGridView1.Rows(0).Cells(workingindex + 2).Value = "GRADUATES"
-                    DataGridView1.Rows(1).Cells(workingindex).Value = "M"
-                    DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
-                    DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
-                    DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
-                    Dim record As String = cbSelectRecord.Text
-                    If sourceDBfilepath <> String.Empty Then
-                        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-                        Dim command As OleDbCommand = connection.CreateCommand()
-                        connection.Open()
-                        Dim row As Integer = 2
-                        While row < DataGridView1.Rows.Count - 1
-                            If DataGridView1.Rows(row).Cells(2) Is Nothing Then
-                                Thread.Sleep(1000)
-                            End If
-                            command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (ProviderName='" & record & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                            'Dim i As Integer = command.ExecuteScalar
-                            'If i > 0 Then
-                            DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
-                            'End If
+        If cbSelectRecord.Text = "All" Then
+            Dim ctr As Integer = 1
+            While ctr < cbSelectRecord.Items.Count
+                If cbReportCategory.Text = "per TVI" Then
+                    Dim flag As Boolean = False
+                    For Each Item In lbActiveRecords.Items
+                        If Item = cbSelectRecord.Items(ctr).ToString Then
+                            flag = True
+                        End If
+                    Next Item
+                    If flag = False Then
+                        If cbSelectRecord.Text <> String.Empty Then
+                            lbActiveRecords.Items.Add(cbSelectRecord.Items(ctr).ToString)
+                            Dim dc As New DataGridViewTextBoxColumn
+                            Dim dc2 As New DataGridViewTextBoxColumn
+                            Dim dc3 As New DataGridViewTextBoxColumn
+                            Dim dc4 As New DataGridViewTextBoxColumn
+                            dc.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc2.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc3.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc4.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            DataGridView1.Columns.Add(dc)
+                            DataGridView1.Columns.Add(dc2)
+                            DataGridView1.Columns.Add(dc3)
+                            DataGridView1.Columns.Add(dc4)
+                            Dim workingindex As New Integer
+                            workingindex = (((lbActiveRecords.Items.Count * 4) - 3) + 3) - 1
+                            DataGridView1.Rows(0).Cells(workingindex).Value = "ENROLLED"
+                            DataGridView1.Rows(0).Cells(workingindex + 2).Value = "GRADUATES"
+                            DataGridView1.Rows(1).Cells(workingindex).Value = "M"
+                            DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
+                            DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
+                            DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
+                            Dim record As String = cbSelectRecord.Text
 
-                            row += 1
-                        End While
-                    Else
-                        MsgBox("sourceDB is empty!")
-                    End If
-                    'Dim thread1 As New System.Threading.Thread(Sub() Me.col1ptviProc(workingindex, record))
-                    Dim thread2 As New System.Threading.Thread(Sub() Me.col2ptviProc(workingindex + 1, record))
-                    Dim thread3 As New System.Threading.Thread(Sub() Me.col3ptviProc(workingindex + 2, record))
-                    Dim thread4 As New System.Threading.Thread(Sub() Me.col4ptviProc(workingindex + 3, record))
-                    'thread1.Start()
-                    thread2.Start()
-                    thread3.Start()
-                    thread4.Start()
-                End If
-            Else
-                MsgBox("Record already active!")
-            End If
-        ElseIf cbReportCategory.Text = "per Educational Attainment" Then
-            Dim flag As Boolean = False
-            For Each Item In lbActiveRecords.Items
-                If Item = cbSelectRecord.Text Then
-                    flag = True
-                End If
-            Next Item
-            If flag = False Then
-                If cbSelectRecord.Text <> String.Empty Then
-                    lbActiveRecords.Items.Add(cbSelectRecord.Text)
-                    Dim dc As New DataGridViewTextBoxColumn
-                    Dim dc2 As New DataGridViewTextBoxColumn
-                    Dim dc3 As New DataGridViewTextBoxColumn
-                    Dim dc4 As New DataGridViewTextBoxColumn
-                    dc.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                    dc2.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                    dc3.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                    dc4.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                    DataGridView1.Columns.Add(dc)
-                    DataGridView1.Columns.Add(dc2)
-                    DataGridView1.Columns.Add(dc3)
-                    DataGridView1.Columns.Add(dc4)
-                    Dim workingindex As New Integer
-                    workingindex = (((lbActiveRecords.Items.Count * 4) - 3) + 3) - 1
-                    DataGridView1.Rows(0).Cells(workingindex).Value = "ENROLLED"
-                    DataGridView1.Rows(0).Cells(workingindex + 2).Value = "GRADUATES"
-                    DataGridView1.Rows(1).Cells(workingindex).Value = "M"
-                    DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
-                    DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
-                    DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
-                    Dim record As String = cbSelectRecord.Text
-                    If sourceDBfilepath <> String.Empty Then
-                        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-                        Dim command As OleDbCommand = connection.CreateCommand()
-                        connection.Open()
-                        Dim row As Integer = 2
-                        While row < DataGridView1.Rows.Count - 1
-                            If DataGridView1.Rows(row).Cells(2) Is Nothing Then
-                                Thread.Sleep(1000)
-                            End If
-                            command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (HighestEducationalAttainment='" & record & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                            'Dim i As Integer = command.ExecuteScalar
-                            'If i > 0 Then
-                            DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
-                            'End If
+                            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+                            Dim command As OleDbCommand = connection.CreateCommand()
+                            connection.Open()
+                            Dim row As Integer = 2
+                            While row < DataGridView1.Rows.Count - 1
+                                If DataGridView1.Rows(row).Cells(2) Is Nothing Then
+                                    Thread.Sleep(1000)
+                                End If
+                                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (ProviderName='" & record & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                                'Dim i As Integer = command.ExecuteScalar
+                                'If i > 0 Then
+                                DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
+                                'End If
 
-                            row += 1
-                        End While
+                                row += 1
+                            End While
+
+                            'Dim thread1 As New System.Threading.Thread(Sub() Me.col1ptviProc(workingindex, record))
+                            Dim thread2 As New System.Threading.Thread(Sub() Me.col2ptviProc(workingindex + 1, record))
+                            Dim thread3 As New System.Threading.Thread(Sub() Me.col3ptviProc(workingindex + 2, record))
+                            Dim thread4 As New System.Threading.Thread(Sub() Me.col4ptviProc(workingindex + 3, record))
+                            'thread1.Start()
+                            thread2.Start()
+                            thread3.Start()
+                            thread4.Start()
+                        End If
                     Else
-                        MsgBox("sourceDB is empty!")
+                        MsgBox("Record already active!")
                     End If
-                    'Dim thread1 As New System.Threading.Thread(Sub() Me.col1ptviProc(workingindex, record))
-                    Dim thread2 As New System.Threading.Thread(Sub() Me.col2pheaProc(workingindex + 1, record))
-                    Dim thread3 As New System.Threading.Thread(Sub() Me.col3pheaProc(workingindex + 2, record))
-                    Dim thread4 As New System.Threading.Thread(Sub() Me.col4pheaProc(workingindex + 3, record))
-                    'thread1.Start()
-                    thread2.Start()
-                    thread3.Start()
-                    thread4.Start()
+                ElseIf cbReportCategory.Text = "per Educational Attainment" Then
+                    Dim flag As Boolean = False
+                    For Each Item In lbActiveRecords.Items
+                        If Item = cbSelectRecord.Items(ctr).ToString Then
+                            flag = True
+                        End If
+                    Next Item
+                    If flag = False Then
+                        If cbSelectRecord.Text <> String.Empty Then
+                            lbActiveRecords.Items.Add(cbSelectRecord.Items(ctr).ToString)
+                            Dim dc As New DataGridViewTextBoxColumn
+                            Dim dc2 As New DataGridViewTextBoxColumn
+                            Dim dc3 As New DataGridViewTextBoxColumn
+                            Dim dc4 As New DataGridViewTextBoxColumn
+                            dc.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc2.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc3.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc4.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            DataGridView1.Columns.Add(dc)
+                            DataGridView1.Columns.Add(dc2)
+                            DataGridView1.Columns.Add(dc3)
+                            DataGridView1.Columns.Add(dc4)
+                            Dim workingindex As New Integer
+                            workingindex = (((lbActiveRecords.Items.Count * 4) - 3) + 3) - 1
+                            DataGridView1.Rows(0).Cells(workingindex).Value = "ENROLLED"
+                            DataGridView1.Rows(0).Cells(workingindex + 2).Value = "GRADUATES"
+                            DataGridView1.Rows(1).Cells(workingindex).Value = "M"
+                            DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
+                            DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
+                            DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
+                            Dim record As String = cbSelectRecord.Text
+                            If sourceDBfilepath <> String.Empty Then
+                                Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+                                Dim command As OleDbCommand = connection.CreateCommand()
+                                connection.Open()
+                                Dim row As Integer = 2
+                                While row < DataGridView1.Rows.Count - 1
+                                    If DataGridView1.Rows(row).Cells(2) Is Nothing Then
+                                        Thread.Sleep(1000)
+                                    End If
+                                    command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (HighestEducationalAttainment='" & record & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                                    'Dim i As Integer = command.ExecuteScalar
+                                    'If i > 0 Then
+                                    DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
+                                    'End If
+
+                                    row += 1
+                                End While
+                            Else
+                                MsgBox("sourceDB is empty!")
+                            End If
+                            'Dim thread1 As New System.Threading.Thread(Sub() Me.col1ptviProc(workingindex, record))
+                            Dim thread2 As New System.Threading.Thread(Sub() Me.col2pheaProc(workingindex + 1, record))
+                            Dim thread3 As New System.Threading.Thread(Sub() Me.col3pheaProc(workingindex + 2, record))
+                            Dim thread4 As New System.Threading.Thread(Sub() Me.col4pheaProc(workingindex + 3, record))
+                            'thread1.Start()
+                            thread2.Start()
+                            thread3.Start()
+                            thread4.Start()
+                        End If
+                    Else
+                        MsgBox("Record already active!")
+                    End If
+                ElseIf cbReportCategory.Text = "per Age Group" Then
+                    If cbSelectRecord.Items(ctr).ToString = "65 Years and Older" Then
+                        Dim flag As Boolean = False
+                        For Each Item In lbActiveRecords.Items
+                            If Item = cbSelectRecord.Items(ctr).ToString Then
+                                flag = True
+                            End If
+                        Next Item
+                        If flag = False Then
+                            If cbSelectRecord.Text <> String.Empty Then
+                                lbActiveRecords.Items.Add(cbSelectRecord.Items(ctr).ToString)
+                                Dim dc As New DataGridViewTextBoxColumn
+                                Dim dc2 As New DataGridViewTextBoxColumn
+                                Dim dc3 As New DataGridViewTextBoxColumn
+                                Dim dc4 As New DataGridViewTextBoxColumn
+                                dc.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                                dc2.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                                dc3.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                                dc4.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                                DataGridView1.Columns.Add(dc)
+                                DataGridView1.Columns.Add(dc2)
+                                DataGridView1.Columns.Add(dc3)
+                                DataGridView1.Columns.Add(dc4)
+                                Dim workingindex As New Integer
+                                workingindex = (((lbActiveRecords.Items.Count * 4) - 3) + 3) - 1
+                                DataGridView1.Rows(0).Cells(workingindex).Value = "ENROLLED"
+                                DataGridView1.Rows(0).Cells(workingindex + 2).Value = "GRADUATES"
+                                DataGridView1.Rows(1).Cells(workingindex).Value = "M"
+                                DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
+                                DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
+                                DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
+                                Dim record As String = "64"
+                                If sourceDBfilepath <> String.Empty Then
+                                    Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+                                    Dim command As OleDbCommand = connection.CreateCommand()
+                                    connection.Open()
+                                    Dim row As Integer = 2
+                                    While row < DataGridView1.Rows.Count - 1
+                                        If DataGridView1.Rows(row).Cells(2) Is Nothing Then
+                                            Thread.Sleep(1000)
+                                        End If
+                                        command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (Cint(Age) > " & record & " AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                                        'Dim i As Integer = command.ExecuteScalar
+                                        'If i > 0 Then
+                                        DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
+                                        'End If
+
+                                        row += 1
+                                    End While
+                                Else
+                                    MsgBox("sourceDB is empty!")
+                                End If
+                                'Dim thread1 As New System.Threading.Thread(Sub() Me.col1ptviProc(workingindex, record))
+                                Dim thread2 As New System.Threading.Thread(Sub() Me.col2pag65Proc(workingindex + 1, record))
+                                Dim thread3 As New System.Threading.Thread(Sub() Me.col3pag65Proc(workingindex + 2, record))
+                                Dim thread4 As New System.Threading.Thread(Sub() Me.col4pag65Proc(workingindex + 3, record))
+                                'thread1.Start()
+                                thread2.Start()
+                                thread3.Start()
+                                thread4.Start()
+                            End If
+                        Else
+                            MsgBox("Record already active!")
+                        End If
+                    Else
+                        Dim flag As Boolean = False
+                        For Each Item In lbActiveRecords.Items
+                            If Item = cbSelectRecord.Items(ctr).ToString Then
+                                flag = True
+                            End If
+                        Next Item
+                        If flag = False Then
+                            If cbSelectRecord.Text <> String.Empty Then
+                                lbActiveRecords.Items.Add(cbSelectRecord.Items(ctr).ToString)
+                                Dim dc As New DataGridViewTextBoxColumn
+                                Dim dc2 As New DataGridViewTextBoxColumn
+                                Dim dc3 As New DataGridViewTextBoxColumn
+                                Dim dc4 As New DataGridViewTextBoxColumn
+                                dc.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                                dc2.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                                dc3.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                                dc4.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                                DataGridView1.Columns.Add(dc)
+                                DataGridView1.Columns.Add(dc2)
+                                DataGridView1.Columns.Add(dc3)
+                                DataGridView1.Columns.Add(dc4)
+                                Dim workingindex As New Integer
+                                workingindex = (((lbActiveRecords.Items.Count * 4) - 3) + 3) - 1
+                                DataGridView1.Rows(0).Cells(workingindex).Value = "ENROLLED"
+                                DataGridView1.Rows(0).Cells(workingindex + 2).Value = "GRADUATES"
+                                DataGridView1.Rows(1).Cells(workingindex).Value = "M"
+                                DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
+                                DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
+                                DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
+                                Dim record() As String = cbSelectRecord.Items(ctr).ToString.Split("-")
+                                If sourceDBfilepath <> String.Empty Then
+                                    Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+                                    Dim command As OleDbCommand = connection.CreateCommand()
+                                    connection.Open()
+                                    Dim row As Integer = 2
+                                    While row < DataGridView1.Rows.Count - 1
+                                        If DataGridView1.Rows(row).Cells(2) Is Nothing Then
+                                            Thread.Sleep(1000)
+                                        End If
+                                        command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE ((Cint(Age) BETWEEN " & record(0) & " AND " & record(1) & ") AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                                        'Dim i As Integer = command.ExecuteScalar
+                                        'If i > 0 Then
+                                        DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
+                                        'End If
+
+                                        row += 1
+                                    End While
+                                Else
+                                    MsgBox("sourceDB is empty!")
+                                End If
+                                'Dim thread1 As New System.Threading.Thread(Sub() Me.col1ptviProc(workingindex, record))
+                                Dim thread2 As New System.Threading.Thread(Sub() Me.col2pagregProc(workingindex + 1, record(0), record(1)))
+                                Dim thread3 As New System.Threading.Thread(Sub() Me.col3pagregProc(workingindex + 2, record(0), record(1)))
+                                Dim thread4 As New System.Threading.Thread(Sub() Me.col4pagregProc(workingindex + 3, record(0), record(1)))
+                                'thread1.Start()
+                                thread2.Start()
+                                thread3.Start()
+                                thread4.Start()
+                            End If
+                        Else
+                            MsgBox("Record already active!")
+                        End If
+                    End If
+                Else
+                    MsgBox("Plese select a report category.")
                 End If
-            Else
-                MsgBox("Record already active!")
-            End If
-        ElseIf cbReportCategory.Text = "per Age Group" Then
-            If cbSelectRecord.Text = "65 Years and Over" Then
+                ctr += 1
+            End While
+        Else
+            If cbReportCategory.Text = "per TVI" Then
                 Dim flag As Boolean = False
                 For Each Item In lbActiveRecords.Items
                     If Item = cbSelectRecord.Text Then
@@ -256,7 +384,68 @@ Public Class frmViewReport
                         DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
                         DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
                         DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
-                        Dim record As String = "64"
+                        Dim record As String = cbSelectRecord.Text
+
+                        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+                        Dim command As OleDbCommand = connection.CreateCommand()
+                        connection.Open()
+                        Dim row As Integer = 2
+                        While row < DataGridView1.Rows.Count - 1
+                            If DataGridView1.Rows(row).Cells(2) Is Nothing Then
+                                Thread.Sleep(1000)
+                            End If
+                            command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (ProviderName='" & record & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                            'Dim i As Integer = command.ExecuteScalar
+                            'If i > 0 Then
+                            DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
+                            'End If
+
+                            row += 1
+                        End While
+
+                        'Dim thread1 As New System.Threading.Thread(Sub() Me.col1ptviProc(workingindex, record))
+                        Dim thread2 As New System.Threading.Thread(Sub() Me.col2ptviProc(workingindex + 1, record))
+                        Dim thread3 As New System.Threading.Thread(Sub() Me.col3ptviProc(workingindex + 2, record))
+                        Dim thread4 As New System.Threading.Thread(Sub() Me.col4ptviProc(workingindex + 3, record))
+                        'thread1.Start()
+                        thread2.Start()
+                        thread3.Start()
+                        thread4.Start()
+                    End If
+                Else
+                    MsgBox("Record already active!")
+                End If
+            ElseIf cbReportCategory.Text = "per Educational Attainment" Then
+                Dim flag As Boolean = False
+                For Each Item In lbActiveRecords.Items
+                    If Item = cbSelectRecord.Text Then
+                        flag = True
+                    End If
+                Next Item
+                If flag = False Then
+                    If cbSelectRecord.Text <> String.Empty Then
+                        lbActiveRecords.Items.Add(cbSelectRecord.Text)
+                        Dim dc As New DataGridViewTextBoxColumn
+                        Dim dc2 As New DataGridViewTextBoxColumn
+                        Dim dc3 As New DataGridViewTextBoxColumn
+                        Dim dc4 As New DataGridViewTextBoxColumn
+                        dc.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                        dc2.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                        dc3.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                        dc4.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                        DataGridView1.Columns.Add(dc)
+                        DataGridView1.Columns.Add(dc2)
+                        DataGridView1.Columns.Add(dc3)
+                        DataGridView1.Columns.Add(dc4)
+                        Dim workingindex As New Integer
+                        workingindex = (((lbActiveRecords.Items.Count * 4) - 3) + 3) - 1
+                        DataGridView1.Rows(0).Cells(workingindex).Value = "ENROLLED"
+                        DataGridView1.Rows(0).Cells(workingindex + 2).Value = "GRADUATES"
+                        DataGridView1.Rows(1).Cells(workingindex).Value = "M"
+                        DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
+                        DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
+                        DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
+                        Dim record As String = cbSelectRecord.Text
                         If sourceDBfilepath <> String.Empty Then
                             Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
                             Dim command As OleDbCommand = connection.CreateCommand()
@@ -266,7 +455,7 @@ Public Class frmViewReport
                                 If DataGridView1.Rows(row).Cells(2) Is Nothing Then
                                     Thread.Sleep(1000)
                                 End If
-                                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (Age > '" & record & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (HighestEducationalAttainment='" & record & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
                                 'Dim i As Integer = command.ExecuteScalar
                                 'If i > 0 Then
                                 DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
@@ -289,74 +478,140 @@ Public Class frmViewReport
                 Else
                     MsgBox("Record already active!")
                 End If
-            Else
-                Dim flag As Boolean = False
-                For Each Item In lbActiveRecords.Items
-                    If Item = cbSelectRecord.Text Then
-                        flag = True
-                    End If
-                Next Item
-                If flag = False Then
-                    If cbSelectRecord.Text <> String.Empty Then
-                        lbActiveRecords.Items.Add(cbSelectRecord.Text)
-                        Dim dc As New DataGridViewTextBoxColumn
-                        Dim dc2 As New DataGridViewTextBoxColumn
-                        Dim dc3 As New DataGridViewTextBoxColumn
-                        Dim dc4 As New DataGridViewTextBoxColumn
-                        dc.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                        dc2.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                        dc3.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                        dc4.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
-                        DataGridView1.Columns.Add(dc)
-                        DataGridView1.Columns.Add(dc2)
-                        DataGridView1.Columns.Add(dc3)
-                        DataGridView1.Columns.Add(dc4)
-                        Dim workingindex As New Integer
-                        workingindex = (((lbActiveRecords.Items.Count * 4) - 3) + 3) - 1
-                        DataGridView1.Rows(0).Cells(workingindex).Value = "ENROLLED"
-                        DataGridView1.Rows(0).Cells(workingindex + 2).Value = "GRADUATES"
-                        DataGridView1.Rows(1).Cells(workingindex).Value = "M"
-                        DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
-                        DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
-                        DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
-                        Dim record() As String = cbSelectRecord.Text.Split("-")
-                        If sourceDBfilepath <> String.Empty Then
-                            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-                            Dim command As OleDbCommand = connection.CreateCommand()
-                            connection.Open()
-                            Dim row As Integer = 2
-                            While row < DataGridView1.Rows.Count - 1
-                                If DataGridView1.Rows(row).Cells(2) Is Nothing Then
-                                    Thread.Sleep(1000)
-                                End If
-                                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE ((Cint(Age) BETWEEN " & record(0) & " AND " & record(1) & ") AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                                'Dim i As Integer = command.ExecuteScalar
-                                'If i > 0 Then
-                                DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
-                                'End If
-
-                                row += 1
-                            End While
-                        Else
-                            MsgBox("sourceDB is empty!")
+            ElseIf cbReportCategory.Text = "per Age Group" Then
+                If cbSelectRecord.Text = "65 Years and Older" Then
+                    Dim flag As Boolean = False
+                    For Each Item In lbActiveRecords.Items
+                        If Item = cbSelectRecord.Text Then
+                            flag = True
                         End If
-                        'Dim thread1 As New System.Threading.Thread(Sub() Me.col1ptviProc(workingindex, record))
-                        Dim thread2 As New System.Threading.Thread(Sub() Me.col2pagregProc(workingindex + 1, record(0), record(1)))
-                        Dim thread3 As New System.Threading.Thread(Sub() Me.col3pagregProc(workingindex + 2, record(0), record(1)))
-                        Dim thread4 As New System.Threading.Thread(Sub() Me.col4pagregProc(workingindex + 3, record(0), record(1)))
-                        'thread1.Start()
-                        thread2.Start()
-                        thread3.Start()
-                        thread4.Start()
+                    Next Item
+                    If flag = False Then
+                        If cbSelectRecord.Text <> String.Empty Then
+                            lbActiveRecords.Items.Add(cbSelectRecord.Text)
+                            Dim dc As New DataGridViewTextBoxColumn
+                            Dim dc2 As New DataGridViewTextBoxColumn
+                            Dim dc3 As New DataGridViewTextBoxColumn
+                            Dim dc4 As New DataGridViewTextBoxColumn
+                            dc.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc2.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc3.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc4.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            DataGridView1.Columns.Add(dc)
+                            DataGridView1.Columns.Add(dc2)
+                            DataGridView1.Columns.Add(dc3)
+                            DataGridView1.Columns.Add(dc4)
+                            Dim workingindex As New Integer
+                            workingindex = (((lbActiveRecords.Items.Count * 4) - 3) + 3) - 1
+                            DataGridView1.Rows(0).Cells(workingindex).Value = "ENROLLED"
+                            DataGridView1.Rows(0).Cells(workingindex + 2).Value = "GRADUATES"
+                            DataGridView1.Rows(1).Cells(workingindex).Value = "M"
+                            DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
+                            DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
+                            DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
+                            Dim record As String = "64"
+                            If sourceDBfilepath <> String.Empty Then
+                                Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+                                Dim command As OleDbCommand = connection.CreateCommand()
+                                connection.Open()
+                                Dim row As Integer = 2
+                                While row < DataGridView1.Rows.Count - 1
+                                    If DataGridView1.Rows(row).Cells(2) Is Nothing Then
+                                        Thread.Sleep(1000)
+                                    End If
+                                    command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (Cint(Age) > " & record & " AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                                    'Dim i As Integer = command.ExecuteScalar
+                                    'If i > 0 Then
+                                    DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
+                                    'End If
+
+                                    row += 1
+                                End While
+                            Else
+                                MsgBox("sourceDB is empty!")
+                            End If
+                            'Dim thread1 As New System.Threading.Thread(Sub() Me.col1ptviProc(workingindex, record))
+                            Dim thread2 As New System.Threading.Thread(Sub() Me.col2pag65Proc(workingindex + 1, record))
+                            Dim thread3 As New System.Threading.Thread(Sub() Me.col3pag65Proc(workingindex + 2, record))
+                            Dim thread4 As New System.Threading.Thread(Sub() Me.col4pag65Proc(workingindex + 3, record))
+                            'thread1.Start()
+                            thread2.Start()
+                            thread3.Start()
+                            thread4.Start()
+                        End If
+                    Else
+                        MsgBox("Record already active!")
                     End If
                 Else
-                    MsgBox("Record already active!")
+                    Dim flag As Boolean = False
+                    For Each Item In lbActiveRecords.Items
+                        If Item = cbSelectRecord.Text Then
+                            flag = True
+                        End If
+                    Next Item
+                    If flag = False Then
+                        If cbSelectRecord.Text <> String.Empty Then
+                            lbActiveRecords.Items.Add(cbSelectRecord.Text)
+                            Dim dc As New DataGridViewTextBoxColumn
+                            Dim dc2 As New DataGridViewTextBoxColumn
+                            Dim dc3 As New DataGridViewTextBoxColumn
+                            Dim dc4 As New DataGridViewTextBoxColumn
+                            dc.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc2.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc3.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            dc4.HeaderText = lbActiveRecords.Items(lbActiveRecords.Items.Count - 1)
+                            DataGridView1.Columns.Add(dc)
+                            DataGridView1.Columns.Add(dc2)
+                            DataGridView1.Columns.Add(dc3)
+                            DataGridView1.Columns.Add(dc4)
+                            Dim workingindex As New Integer
+                            workingindex = (((lbActiveRecords.Items.Count * 4) - 3) + 3) - 1
+                            DataGridView1.Rows(0).Cells(workingindex).Value = "ENROLLED"
+                            DataGridView1.Rows(0).Cells(workingindex + 2).Value = "GRADUATES"
+                            DataGridView1.Rows(1).Cells(workingindex).Value = "M"
+                            DataGridView1.Rows(1).Cells(workingindex + 2).Value = "M"
+                            DataGridView1.Rows(1).Cells(workingindex + 1).Value = "F"
+                            DataGridView1.Rows(1).Cells(workingindex + 3).Value = "F"
+                            Dim record() As String = cbSelectRecord.Text.Split("-")
+                            If sourceDBfilepath <> String.Empty Then
+                                Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+                                Dim command As OleDbCommand = connection.CreateCommand()
+                                connection.Open()
+                                Dim row As Integer = 2
+                                While row < DataGridView1.Rows.Count - 1
+                                    If DataGridView1.Rows(row).Cells(2) Is Nothing Then
+                                        Thread.Sleep(1000)
+                                    End If
+                                    command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE ((Cint(Age) BETWEEN " & record(0) & " AND " & record(1) & ") AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                                    'Dim i As Integer = command.ExecuteScalar
+                                    'If i > 0 Then
+                                    DataGridView1.Rows(row).Cells(workingindex).Value = command.ExecuteScalar.ToString
+                                    'End If
+
+                                    row += 1
+                                End While
+                            Else
+                                MsgBox("sourceDB is empty!")
+                            End If
+                            'Dim thread1 As New System.Threading.Thread(Sub() Me.col1ptviProc(workingindex, record))
+                            Dim thread2 As New System.Threading.Thread(Sub() Me.col2pagregProc(workingindex + 1, record(0), record(1)))
+                            Dim thread3 As New System.Threading.Thread(Sub() Me.col3pagregProc(workingindex + 2, record(0), record(1)))
+                            Dim thread4 As New System.Threading.Thread(Sub() Me.col4pagregProc(workingindex + 3, record(0), record(1)))
+                            'thread1.Start()
+                            thread2.Start()
+                            thread3.Start()
+                            thread4.Start()
+                        End If
+                    Else
+                        MsgBox("Record already active!")
+                    End If
                 End If
+            Else
+                MsgBox("Plese select a report category.")
             End If
-        Else
-            MsgBox("Plese select a report category.")
         End If
-       
+        
+
 
     End Sub
 
@@ -387,55 +642,50 @@ Public Class frmViewReport
     'End Sub
 
     Public Sub col2ptviProc(ByVal index As Integer, ByVal tvi As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count - 1
-                'Try
-                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (ProviderName='" & tvi & "' AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count - 1
+            'Try
+            command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (ProviderName='" & tvi & "' AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+            'Dim i As Integer = command.ExecuteScalar
+            'If i > 0 Then
+            DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
+            'End If
+
+            'Catch ex As Exception
+            'End Try
+            row += 1
+        End While
+        connection.Close()
+
+    End Sub
+
+    Public Sub col3ptviProc(ByVal index As Integer, ByVal tvi As String)
+
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count - 1
+            Try
+                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (ProviderName='" & tvi & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
                 'Dim i As Integer = command.ExecuteScalar
                 'If i > 0 Then
                 DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
                 'End If
 
-                'Catch ex As Exception
-                'End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
-    End Sub
-
-    Public Sub col3ptviProc(ByVal index As Integer, ByVal tvi As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count - 1
-                Try
-                    command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (ProviderName='" & tvi & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                    'Dim i As Integer = command.ExecuteScalar
-                    'If i > 0 Then
-                    DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
-                    'End If
-
-                Catch ex As Exception
-                End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
+            Catch ex As Exception
+            End Try
+            row += 1
+        End While
+        connection.Close()
+        
     End Sub
 
     Public Sub col4ptviProc(ByVal index As Integer, ByVal tvi As String)
-        If sourceDBfilepath <> String.Empty Then
             Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
             Dim command As OleDbCommand = connection.CreateCommand()
             connection.Open()
@@ -453,225 +703,205 @@ Public Class frmViewReport
                 row += 1
             End While
             connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
     End Sub
 
     Public Sub col2pheaProc(ByVal index As Integer, ByVal hea As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count - 1
-                'Try
-                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (HighestEducationalAttainment='" & hea & "' AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                'Dim i As Integer = command.ExecuteScalar
-                'If i > 0 Then
-                DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
-                'End If
 
-                'Catch ex As Exception
-                'End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count - 1
+            'Try
+            command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (HighestEducationalAttainment='" & hea & "' AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+            'Dim i As Integer = command.ExecuteScalar
+            'If i > 0 Then
+            DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
+            'End If
+
+            'Catch ex As Exception
+            'End Try
+            row += 1
+        End While
+        connection.Close()
+        connection.Dispose()
+        command.Dispose()
     End Sub
 
     Public Sub col3pheaProc(ByVal index As Integer, ByVal hea As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count - 1
-                Try
-                    command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (HighestEducationalAttainment='" & hea & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                    'Dim i As Integer = command.ExecuteScalar
-                    'If i > 0 Then
-                    DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
-                    'End If
 
-                Catch ex As Exception
-                End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count - 1
+            Try
+                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (HighestEducationalAttainment='" & hea & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                'Dim i As Integer = command.ExecuteScalar
+                'If i > 0 Then
+                DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
+                'End If
+
+            Catch ex As Exception
+            End Try
+            row += 1
+        End While
+        connection.Close()
+        
     End Sub
 
     Public Sub col4pheaProc(ByVal index As Integer, ByVal hea As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count
-                Try
-                    command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (HighestEducationalAttainment='" & hea & "' AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                    'Dim i As Integer = command.ExecuteScalar
-                    'If i > 0 Then
-                    DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
-                    'End If
 
-                Catch ex As Exception
-                End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count
+            Try
+                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (HighestEducationalAttainment='" & hea & "' AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                'Dim i As Integer = command.ExecuteScalar
+                'If i > 0 Then
+                DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
+                'End If
+
+            Catch ex As Exception
+            End Try
+            row += 1
+        End While
+        connection.Close()
+       
     End Sub
 
     Public Sub col2pag65Proc(ByVal index As Integer, ByVal ll As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count - 1
-                'Try
-                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (Age > '" & ll & "' AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                'Dim i As Integer = command.ExecuteScalar
-                'If i > 0 Then
-                DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
-                'End If
 
-                'Catch ex As Exception
-                'End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count - 1
+            'Try
+            command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (Cint(Age) > " & ll & " AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+            'Dim i As Integer = command.ExecuteScalar
+            'If i > 0 Then
+            DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
+            'End If
+
+            'Catch ex As Exception
+            'End Try
+            row += 1
+        End While
+        connection.Close()
+        
     End Sub
 
     Public Sub col3pag65Proc(ByVal index As Integer, ByVal ll As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count - 1
-                Try
-                    command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (Age > '" & ll & "' AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                    'Dim i As Integer = command.ExecuteScalar
-                    'If i > 0 Then
-                    DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
-                    'End If
 
-                Catch ex As Exception
-                End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
-    End Sub
-
-    Public Sub col4pag65Proc(ByVal index As Integer, ByVal ll As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count
-                Try
-                    command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (Age > '" & ll & "' AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                    'Dim i As Integer = command.ExecuteScalar
-                    'If i > 0 Then
-                    DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
-                    'End If
-
-                Catch ex As Exception
-                End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
-    End Sub
-
-    Public Sub col2pagregProc(ByVal index As Integer, ByVal ll As String, ByVal ul As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count - 1
-                'Try
-                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE ((Cint(Age) BETWEEN " & ll & " AND " & ul & ") AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count - 1
+            Try
+                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (Cint(Age) > " & ll & " AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
                 'Dim i As Integer = command.ExecuteScalar
                 'If i > 0 Then
                 DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
                 'End If
 
-                'Catch ex As Exception
-                'End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
+            Catch ex As Exception
+            End Try
+            row += 1
+        End While
+        connection.Close()
+       
+    End Sub
+
+    Public Sub col4pag65Proc(ByVal index As Integer, ByVal ll As String)
+
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count
+            Try
+                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE (Cint(Age) > '" & ll & "' AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                'Dim i As Integer = command.ExecuteScalar
+                'If i > 0 Then
+                DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
+                'End If
+
+            Catch ex As Exception
+            End Try
+            row += 1
+        End While
+        connection.Close()
+
+    End Sub
+
+    Public Sub col2pagregProc(ByVal index As Integer, ByVal ll As String, ByVal ul As String)
+
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count - 1
+            'Try
+            command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE ((Cint(Age) BETWEEN " & ll & " AND " & ul & ") AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "') AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+            'Dim i As Integer = command.ExecuteScalar
+            'If i > 0 Then
+            DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
+            'End If
+
+            'Catch ex As Exception
+            'End Try
+            row += 1
+        End While
+        connection.Close()
+       
     End Sub
 
     Public Sub col3pagregProc(ByVal index As Integer, ByVal ll As String, ByVal ul As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count - 1
-                Try
-                    command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE ((Cint(Age) BETWEEN " & ll & " AND " & ul & ") AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                    'Dim i As Integer = command.ExecuteScalar
-                    'If i > 0 Then
-                    DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
-                    'End If
 
-                Catch ex As Exception
-                End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count - 1
+            Try
+                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE ((Cint(Age) BETWEEN " & ll & " AND " & ul & ") AND Sex='Male') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                'Dim i As Integer = command.ExecuteScalar
+                'If i > 0 Then
+                DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
+                'End If
+
+            Catch ex As Exception
+            End Try
+            row += 1
+        End While
+        connection.Close()
+       
     End Sub
 
     Public Sub col4pagregProc(ByVal index As Integer, ByVal ll As String, ByVal ul As String)
-        If sourceDBfilepath <> String.Empty Then
-            Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
-            Dim command As OleDbCommand = connection.CreateCommand()
-            connection.Open()
-            Dim row As Integer = 2
-            While row < DataGridView1.Rows.Count
-                Try
-                    command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE ((Cint(Age) BETWEEN " & ll & " AND " & ul & ") AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
-                    'Dim i As Integer = command.ExecuteScalar
-                    'If i > 0 Then
-                    DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
-                    'End If
 
-                Catch ex As Exception
-                End Try
-                row += 1
-            End While
-            connection.Close()
-        Else
-            MsgBox("sourceDB is empty!")
-        End If
+        Dim connection As New OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" & sourceDBfilepath & ";Extended Properties='Excel 12.0 Xml; HDR=YES; IMEX=1'")
+        Dim command As OleDbCommand = connection.CreateCommand()
+        connection.Open()
+        Dim row As Integer = 2
+        While row < DataGridView1.Rows.Count
+            Try
+                command.CommandText = "SELECT Count(*) FROM [MISdb$] WHERE ((Cint(Age) BETWEEN " & ll & " AND " & ul & ") AND Sex='Female') AND (FullQualificationWTR='" & DataGridView1.Rows(row).Cells(1).Value.ToString & "' And PTQFLevel='" & DataGridView1.Rows(row).Cells(2).Value.ToString & "' And DateFinished IS NOT NULL) AND CutOffMarker='" & reportmonth & "/" & reportyear & "'"
+                'Dim i As Integer = command.ExecuteScalar
+                'If i > 0 Then
+                DataGridView1.Rows(row).Cells(index).Value = command.ExecuteScalar.ToString
+                'End If
+
+            Catch ex As Exception
+            End Try
+            row += 1
+        End While
+        connection.Close()
+       
     End Sub
 
     'Exporting
@@ -750,6 +980,14 @@ Public Class frmViewReport
 
     Private Sub Label5_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Label5.Click
         Me.WindowState = FormWindowState.Minimized
+    End Sub
+
+    Private Sub DataGridView1_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles DataGridView1.CellContentClick
+
+    End Sub
+
+    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
+        Me.Close()
     End Sub
 End Class
 
